@@ -221,8 +221,8 @@
           "",
           "【 습식 가공비 】",
           `Co        ${Number(inp.coWetCost).toLocaleString("ko-KR")} ₩/kg`,
-          `Ni        ${Number(inp.niWetCost).toLocaleString("ko-KR")} ₩/kg`,
-          `Li₂CO₃    ${Number(inp.liWetCost).toLocaleString("ko-KR")} ₩/kg`,
+          `Ni           ${Number(inp.niWetCost).toLocaleString("ko-KR")}₩/kg`,
+          `Li₂CO₃    ${Number(inp.liWetCost).toLocaleString("ko-KR")}₩/kg`,
           "",
           "【 Payable Rate 】",
           `Co+Ni 기준 (일반시장):   ${c.ratioCoNi.toFixed(0)}%`,
@@ -230,9 +230,9 @@
           `매입단가 (₩/kg 환산):    ${Math.round(c.payable).toLocaleString("ko-KR")} ₩/kg`,
           "",
           "【 이 딜 분석 】",
-          `최종 협상 Payable Rate:  ${inp.marketRatioCoNi}%`,
-          `kg당 마진:               ${Math.round(c.cmKg).toLocaleString("ko-KR")} ₩/kg`,
-          `마진율:                 ${c.marginBase>0 ? (c.cmKg/c.marginBase*100).toFixed(2)+"%" : "—"}`,
+          `최종 협상 Payable Rate:       ${inp.marketRatioCoNi}%`,
+          `kg당 마진:                 ${Math.round(c.cmKg).toLocaleString("ko-KR")} ₩/kg`,
+          `마진율:                   ${c.marginBase>0 ? (c.cmKg/c.marginBase*100).toFixed(2)+"%" : "—"}`,
           "━━━━━━━━━━━━"
         ].join("\n");
         navigator.clipboard.writeText(text).then(() => {
@@ -250,7 +250,7 @@
           fontSize:14, fontWeight:700, fontFamily:"Arial",
           display:"flex", alignItems:"center", justifyContent:"center", gap:6,
         }}>
-          {copied ? "✅ 클립보드에 복사됨" : "📋 결과 복사 (이메일•메신저용)"}
+          {copied ? "✅  클립보드에 복사됨" : "📋 결과 복사 (이메일•메신저용)"}
         </button>
       );
     }
@@ -1012,3 +1012,4 @@
   </script>
 </body>
 </html>
+
