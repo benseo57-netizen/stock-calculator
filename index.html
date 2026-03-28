@@ -203,7 +203,7 @@
     function CopyBtn({ c, inp }) {
       const [copied, setCopied] = useState(false);
       const handle = () => {
-        // 분말화 후 함량 계산을 위한 헬퍼 함수
+        // 분말화 후 함량 계산을 위한 함수 (입력값 * 분말화비율)
         const p = num(inp.powderRatio) / 100;
         const fC = v => parseFloat((num(v) * p).toFixed(3)) + "%";
 
