@@ -203,8 +203,6 @@
     function CopyBtn({ c, inp }) {
       const [copied, setCopied] = useState(false);
       const handle = () => {
-        const now = new Date().toLocaleDateString("ko-KR");
-        const sig = c.cmKg < 0 ? "🔴 상한선 초과 — 비용 미회수" : "✅ 변동비 회수 — 매입 가능";
         const text = [
           "━━━━━━━━━━━━━━━━━━━━━━━",
           "📊 Payable Rate 분석 결과",
@@ -224,12 +222,7 @@
           `kg당 마진:                 ${Math.round(c.cmKg).toLocaleString("ko-KR")} ₩/kg`,
           `목표 마진:                ${Math.round(c.tgtMarginAmt).toLocaleString("ko-KR")} ₩/kg`,
           `마진율:                   ${c.marginBase>0 ? (c.tgtMarginAmt/c.marginBase*100).toFixed(1)+"%" : "—"}`,
-          "",
-          "【 판단 】",
-          sig,
-          "",
-          `※ 유휴 캐파 범위 기준 판단 도구 · ${now}`,
-          "━━━━━━━━━━━━━━━━━━━━━━━",
+          "━━━━━━━━━━━━━━━━━━━━━━━"
         ].join("\n");
         navigator.clipboard.writeText(text).then(() => {
           setCopied(true);
@@ -246,7 +239,7 @@
           fontSize:14, fontWeight:700, fontFamily:"Arial",
           display:"flex", alignItems:"center", justifyContent:"center", gap:6,
         }}>
-          {copied ? "✅  클립보드에 복사됨" : "📋  결과 복사 (슬랙·이메일·카톡용)"}
+          {copied ? "클립보드에 복사됨" : "결과 복사 (슬랙·이메일·카톡용)"}
         </button>
       );
     }
@@ -466,7 +459,7 @@
                   </div>
                   <div style={{ textAlign:"right" }}>
                     <div style={{ fontSize:22, fontWeight:800, color:cmA3>=0?C.green:C.red }}>
-                      {cmA3>=0?"✅ ":"🔴 "}{f0(cmA3)} ₩/kg
+                      {f0(cmA3)} ₩/kg
                     </div>
                   </div>
                 </div>
@@ -580,7 +573,7 @@
                   </div>
                   <div style={{ textAlign:"right" }}>
                     <div style={{ fontSize:22, fontWeight:800, color:cmB3>=0?C.green:C.red }}>
-                      {cmB3>=0?"✅ ":"🔴 "}{f0(cmB3)} ₩/kg
+                      {f0(cmB3)} ₩/kg
                     </div>
                   </div>
                 </div>
