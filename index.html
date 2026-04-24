@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>우리사주 수익 계산기</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -10,32 +10,35 @@
     body {
       font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100dvh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 20px 16px;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
     }
 
     .card {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 24px;
-      padding: 32px 24px;
       width: 100%;
-      max-width: 480px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+      min-height: 100vh;
+      padding: 32px 20px 40px;
+      display: flex;
+      flex-direction: column;
     }
 
-    @media (max-width: 520px) {
-      body { padding: 12px; align-items: stretch; }
-      .card { border-radius: 20px; padding: 24px 16px; max-width: 100%; }
+    @media (min-width: 600px) {
+      body { display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; }
+      .card {
+        min-height: auto;
+        max-width: 480px;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 24px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+      }
     }
 
     h1 {
       color: #fff;
-      font-size: clamp(18px, 5vw, 24px);
+      font-size: 22px;
       font-weight: 700;
       text-align: center;
       margin-bottom: 4px;
@@ -44,9 +47,9 @@
 
     .subtitle {
       color: rgba(255,255,255,0.4);
-      font-size: clamp(12px, 3vw, 14px);
+      font-size: 14px;
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .input-group {
@@ -58,9 +61,8 @@
 
     .input-label {
       color: rgba(255,255,255,0.55);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.6px;
       margin-bottom: 10px;
     }
 
@@ -81,7 +83,7 @@
       border: none;
       outline: none;
       color: #ffdd00;
-      font-size: clamp(24px, 7vw, 32px);
+      font-size: 30px;
       font-weight: 700;
       padding: 14px 12px;
       font-family: inherit;
@@ -92,7 +94,7 @@
 
     .currency-tag {
       color: rgba(255,221,0,0.6);
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
       padding: 0 14px 0 4px;
     }
@@ -102,20 +104,24 @@
       gap: 7px;
       margin-top: 12px;
     }
+
     .quick-btn {
       flex: 1;
       background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 10px;
       color: rgba(255,255,255,0.7);
-      font-size: clamp(12px, 3vw, 14px);
-      padding: 11px 2px;
+      font-size: 14px;
+      padding: 12px 2px;
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
       text-align: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
-    .quick-btn:hover, .quick-btn:active {
+    .quick-btn:active {
       background: rgba(255,221,0,0.15);
       border-color: rgba(255,221,0,0.4);
       color: #ffdd00;
@@ -131,24 +137,24 @@
     .info-item {
       background: rgba(255,255,255,0.05);
       border-radius: 12px;
-      padding: 12px 14px;
+      padding: 14px;
       border: 1px solid rgba(255,255,255,0.07);
     }
     .info-item .label {
       color: rgba(255,255,255,0.38);
-      font-size: clamp(11px, 2.8vw, 12px);
-      margin-bottom: 4px;
+      font-size: 12px;
+      margin-bottom: 5px;
     }
     .info-item .value {
       color: rgba(255,255,255,0.85);
-      font-size: clamp(13px, 3.8vw, 16px);
+      font-size: 15px;
       font-weight: 600;
     }
 
     .calc-box {
       background: rgba(255,255,255,0.04);
       border-radius: 16px;
-      padding: 20px;
+      padding: 18px 20px;
       border: 1px solid rgba(255,255,255,0.08);
       margin-bottom: 12px;
     }
@@ -157,16 +163,16 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 9px 0;
+      padding: 8px 0;
     }
 
     .calc-row .c-label {
       color: rgba(255,255,255,0.5);
-      font-size: clamp(12px, 3.2vw, 14px);
+      font-size: 14px;
     }
     .calc-row .c-value {
       color: rgba(255,255,255,0.85);
-      font-size: clamp(13px, 3.5vw, 15px);
+      font-size: 15px;
       font-weight: 600;
     }
     .calc-row .c-value.red { color: #ff5252; }
@@ -184,20 +190,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 12px;
+      padding: 9px 12px;
       background: rgba(255,255,255,0.03);
       border-radius: 8px;
       margin-bottom: 16px;
       border: 1px solid rgba(255,255,255,0.05);
     }
-    .ref-row .ref-label { color: rgba(255,255,255,0.3); font-size: clamp(11px, 2.8vw, 12px); }
-    .ref-row .ref-value { color: rgba(255,255,255,0.45); font-size: clamp(12px, 3vw, 13px); font-weight: 600; }
+    .ref-row .ref-label { color: rgba(255,255,255,0.3); font-size: 12px; }
+    .ref-row .ref-value { color: rgba(255,255,255,0.45); font-size: 13px; font-weight: 600; }
 
     .profit-box {
       background: linear-gradient(135deg, rgba(0,200,100,0.15), rgba(0,150,80,0.08));
       border: 1px solid rgba(0,200,100,0.3);
       border-radius: 16px;
-      padding: 22px;
+      padding: 24px;
       text-align: center;
       transition: all 0.3s;
     }
@@ -207,15 +213,14 @@
     }
 
     .profit-label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.6px;
       color: rgba(255,255,255,0.45);
       margin-bottom: 10px;
     }
 
     .profit-amount {
-      font-size: clamp(30px, 8.5vw, 42px);
+      font-size: 38px;
       font-weight: 700;
       color: #00e676;
       letter-spacing: -1px;
@@ -225,10 +230,10 @@
     .profit-amount.loss { color: #ff5252; }
 
     .profit-rate {
-      font-size: clamp(13px, 3.5vw, 15px);
+      font-size: 15px;
       font-weight: 600;
       color: rgba(0,230,118,0.7);
-      margin-top: 7px;
+      margin-top: 8px;
       transition: color 0.3s;
     }
     .profit-rate.loss { color: rgba(255,82,82,0.7); }
@@ -239,15 +244,15 @@
       border: 1px solid rgba(255,221,0,0.28);
       border-radius: 20px;
       color: #ffdd00;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
-      padding: 3px 10px;
+      padding: 4px 12px;
       margin-top: 10px;
     }
 
     footer {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 24px;
       color: rgba(255,255,255,0.18);
       font-size: 11px;
     }
@@ -265,11 +270,11 @@
       <span class="currency-tag">원</span>
     </div>
     <div class="quick-btns">
-      <button class="quick-btn" onclick="setPrice(50000)">5만</button>
-      <button class="quick-btn" onclick="setPrice(70000)">7만</button>
-      <button class="quick-btn" onclick="setPrice(100000)">10만</button>
-      <button class="quick-btn" onclick="setPrice(150000)">15만</button>
-      <button class="quick-btn" onclick="setPrice(200000)">20만</button>
+      <button class="quick-btn" ontouchstart="setPrice(50000)" onclick="setPrice(50000)">5만</button>
+      <button class="quick-btn" ontouchstart="setPrice(70000)" onclick="setPrice(70000)">7만</button>
+      <button class="quick-btn" ontouchstart="setPrice(100000)" onclick="setPrice(100000)">10만</button>
+      <button class="quick-btn" ontouchstart="setPrice(150000)" onclick="setPrice(150000)">15만</button>
+      <button class="quick-btn" ontouchstart="setPrice(200000)" onclick="setPrice(200000)">20만</button>
     </div>
   </div>
 
@@ -334,8 +339,9 @@
   }
 
   function setPrice(p) {
-    document.getElementById('currentPrice').value = p;
-    calculate();
+    const input = document.getElementById('currentPrice');
+    input.value = p;
+    input.dispatchEvent(new Event('input'));
   }
 
   function calculate() {
