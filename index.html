@@ -2,216 +2,336 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>우리사주 수익 계산기</title>
   <style>
-    /* 기본 초기화 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background-color: #1a1a2e; width: 100%; overflow-x: hidden; }
 
     body {
-      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-      color: #fff;
-      display: block;
-      -webkit-font-smoothing: antialiased;
+      font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100dvh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 16px;
     }
 
-    /* 좌우 여백을 최소화 (16px -> 8px) 하여 화면을 꽉 채움 */
-    .container {
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 32px 24px;
       width: 100%;
-      max-width: 600px; /* 데스크톱에서 조금 더 넓게 */
-      margin: 0 auto;
-      padding: 16px 8px 40px 8px; /* 양옆 여백을 8px로 대폭 축소 */
+      max-width: 480px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 12px; align-items: stretch; }
+      .card { border-radius: 20px; padding: 24px 16px; max-width: 100%; }
     }
 
     h1 {
-      font-size: 26px;
-      font-weight: 800;
+      color: #fff;
+      font-size: clamp(18px, 5vw, 24px);
+      font-weight: 700;
       text-align: center;
       margin-bottom: 4px;
       letter-spacing: -0.5px;
     }
 
     .subtitle {
-      font-size: 13px;
       color: rgba(255,255,255,0.4);
+      font-size: clamp(12px, 3vw, 14px);
       text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .input-group {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 20px;
     }
 
-    /* 1. 주가 입력 섹션 (내부 여백도 줄여서 입력칸을 최대로 키움) */
-    .input-section {
-      background: rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 16px 12px; /* 좌우 패딩 축소 */
-      margin-bottom: 12px;
-    }
-
     .input-label {
-      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
       font-weight: 600;
-      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.6px;
       margin-bottom: 10px;
-      display: block;
     }
 
-    .input-wrapper {
+    .input-row {
       display: flex;
       align-items: center;
-      background: #000;
-      border: 3px solid #ffdd00;
+      background: rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,221,0,0.5);
       border-radius: 12px;
-      padding: 12px 14px;
+      overflow: hidden;
+      transition: border-color 0.2s;
     }
+    .input-row:focus-within { border-color: #ffdd00; }
 
     input[type="number"] {
       flex: 1;
-      min-width: 0;
       background: transparent;
       border: none;
       outline: none;
       color: #ffdd00;
-      font-size: clamp(34px, 10vw, 42px); /* 숫자 크기 상향 */
-      font-weight: 900;
-      text-align: right;
-      font-family: inherit;
-    }
-
-    .unit {
-      color: #ffdd00;
-      font-size: 20px;
+      font-size: clamp(24px, 7vw, 32px);
       font-weight: 700;
-      margin-left: 6px;
+      padding: 14px 12px;
+      font-family: inherit;
+      text-align: right;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .currency-tag {
+      color: rgba(255,221,0,0.6);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 0 14px 0 4px;
     }
 
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+    .quick-btns {
+      display: flex;
+      gap: 7px;
       margin-top: 12px;
     }
-    .btn {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      padding: 12px 0;
-      font-size: 14px;
-      font-weight: 600;
+    .quick-btn {
+      flex: 1;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.7);
+      font-size: clamp(12px, 3vw, 14px);
+      padding: 11px 2px;
       cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      text-align: center;
     }
-    .btn:active { background: #ffdd00; color: #000; }
+    .quick-btn:hover, .quick-btn:active {
+      background: rgba(255,221,0,0.15);
+      border-color: rgba(255,221,0,0.4);
+      color: #ffdd00;
+    }
 
-    /* 2. 기본 정보 카드 (좌우 꽉 차게) */
-    .info-container {
+    .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
     }
-    .info-card {
-      background: rgba(255,255,255,0.04);
-      padding: 14px 12px;
-      border-radius: 12px;
-    }
-    .info-card .label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
-    .info-card .value { font-size: clamp(15px, 4vw, 17px); font-weight: 700; }
 
-    /* 3. 평가액 리스트 */
-    .detail-list {
-      background: rgba(255,255,255,0.03);
-      border-radius: 14px;
-      padding: 4px 14px;
+    .info-item {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .info-item .label {
+      color: rgba(255,255,255,0.38);
+      font-size: clamp(11px, 2.8vw, 12px);
+      margin-bottom: 4px;
+    }
+    .info-item .value {
+      color: rgba(255,255,255,0.85);
+      font-size: clamp(13px, 3.8vw, 16px);
+      font-weight: 600;
+    }
+
+    .calc-box {
+      background: rgba(255,255,255,0.04);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
       margin-bottom: 12px;
     }
-    .row {
+
+    .calc-row {
       display: flex;
       justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 15px;
+      align-items: center;
+      padding: 9px 0;
     }
-    .row:last-child { border-bottom: none; }
-    .row .label { color: rgba(255,255,255,0.5); }
-    .row .val { font-weight: 600; }
 
-    /* 4. 최종 수익 박스 */
-    .summary-box {
-      background: linear-gradient(135deg, #00c853 0%, #1b5e20 100%);
+    .calc-row .c-label {
+      color: rgba(255,255,255,0.5);
+      font-size: clamp(12px, 3.2vw, 14px);
+    }
+    .calc-row .c-value {
+      color: rgba(255,255,255,0.85);
+      font-size: clamp(13px, 3.5vw, 15px);
+      font-weight: 600;
+    }
+    .calc-row .c-value.red { color: #ff5252; }
+
+    .divider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+    .divider-symbol { color: rgba(255,255,255,0.25); font-size: 18px; }
+
+    .ref-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .ref-row .ref-label { color: rgba(255,255,255,0.3); font-size: clamp(11px, 2.8vw, 12px); }
+    .ref-row .ref-value { color: rgba(255,255,255,0.45); font-size: clamp(12px, 3vw, 13px); font-weight: 600; }
+
+    .profit-box {
+      background: linear-gradient(135deg, rgba(0,200,100,0.15), rgba(0,150,80,0.08));
+      border: 1px solid rgba(0,200,100,0.3);
       border-radius: 16px;
-      padding: 28px 12px;
+      padding: 22px;
       text-align: center;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      transition: all 0.3s;
     }
-    .summary-box.loss {
-      background: linear-gradient(135deg, #ff5252 0%, #b71c1c 100%);
+    .profit-box.loss {
+      background: linear-gradient(135deg, rgba(255,80,80,0.15), rgba(200,50,50,0.08));
+      border-color: rgba(255,80,80,0.3);
     }
 
-    .res-label { font-size: 13px; margin-bottom: 6px; font-weight: 600; opacity: 0.9; }
-    .res-amount { font-size: clamp(36px, 11vw, 48px); font-weight: 900; margin-bottom: 4px; letter-spacing: -1px; }
-    .res-rate { font-size: 16px; font-weight: 700; }
+    .profit-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 10px;
+    }
+
+    .profit-amount {
+      font-size: clamp(30px, 8.5vw, 42px);
+      font-weight: 700;
+      color: #00e676;
+      letter-spacing: -1px;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+    .profit-amount.loss { color: #ff5252; }
+
+    .profit-rate {
+      font-size: clamp(13px, 3.5vw, 15px);
+      font-weight: 600;
+      color: rgba(0,230,118,0.7);
+      margin-top: 7px;
+      transition: color 0.3s;
+    }
+    .profit-rate.loss { color: rgba(255,82,82,0.7); }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,221,0,0.13);
+      border: 1px solid rgba(255,221,0,0.28);
+      border-radius: 20px;
+      color: #ffdd00;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      margin-top: 10px;
+    }
 
     footer {
       text-align: center;
-      font-size: 11px;
-      color: rgba(255,255,255,0.2);
       margin-top: 20px;
-      line-height: 1.5;
+      color: rgba(255,255,255,0.18);
+      font-size: 11px;
     }
   </style>
 </head>
 <body>
+<div class="card">
+  <h1>🏢 우리사주 수익 계산기</h1>
+  <p class="subtitle">현재 주가를 입력하면 수익을 바로 계산합니다</p>
 
-<div class="container">
-  <h1>🏢 우리사주 계산기</h1>
-  <p class="subtitle">실시간 수익 현황</p>
-
-  <div class="input-section">
-    <span class="input-label">실시간 주가 입력 (원)</span>
-    <div class="input-wrapper">
-      <input type="number" id="currentPrice" value="100000" oninput="calculate()" pattern="\d*">
-      <span class="unit">원</span>
+  <div class="input-group">
+    <div class="input-label">📌 현재 주가 입력</div>
+    <div class="input-row">
+      <input type="number" id="currentPrice" placeholder="100000" value="100000" oninput="calculate()" />
+      <span class="currency-tag">원</span>
     </div>
-    <div class="quick-grid">
-      <button class="btn" onclick="setPrice(50000)">5만</button>
-      <button class="btn" onclick="setPrice(70000)">7만</button>
-      <button class="btn" onclick="setPrice(100000)">10만</button>
-      <button class="btn" onclick="setPrice(150000)">15만</button>
+    <div class="quick-btns">
+      <button class="quick-btn" onclick="setPrice(50000)">5만</button>
+      <button class="quick-btn" onclick="setPrice(70000)">7만</button>
+      <button class="quick-btn" onclick="setPrice(100000)">10만</button>
+      <button class="quick-btn" onclick="setPrice(150000)">15만</button>
+      <button class="quick-btn" onclick="setPrice(200000)">20만</button>
     </div>
   </div>
 
-  <div class="info-container">
-    <div class="info-card"><div class="label">보유 주식</div><div class="value">1,893 주</div></div>
-    <div class="info-card"><div class="label">취득 단가</div><div class="value">50,000 원</div></div>
-    <div class="info-card"><div class="label">총 대출액</div><div class="value" style="color:#ff8a8a">6,160만 원</div></div>
-    <div class="info-card"><div class="label">타인 주식</div><div class="value">600 주</div></div>
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="label">보유 주식수</div>
+      <div class="value">1,893 주</div>
+    </div>
+    <div class="info-item">
+      <div class="label">취득가격</div>
+      <div class="value">50,000 원</div>
+    </div>
+    <div class="info-item">
+      <div class="label">총 주식수</div>
+      <div class="value">2,493 주</div>
+    </div>
+    <div class="info-item">
+      <div class="label">대출액</div>
+      <div class="value">61,600,000 원</div>
+    </div>
   </div>
 
-  <div class="detail-list">
-    <div class="row"><span class="label">보유분 평가액</span><span class="val" id="holdingValue">—</span></div>
-    <div class="row"><span class="label">타인분 평가액</span><span class="val" id="otherValue">—</span></div>
-    <div class="row" style="border:none;"><span class="label" style="color:#fff; font-weight:700;">전체 합계</span><span class="val" id="totalValue" style="color:#ffdd00;">—</span></div>
+  <div class="calc-box">
+    <div class="calc-row">
+      <span class="c-label">보유주식 평가액 (1,893주)</span>
+      <span class="c-value" id="holdingValue">—</span>
+    </div>
+    <div class="divider-row">
+      <div class="divider-line"></div>
+      <div class="divider-symbol">−</div>
+      <div class="divider-line"></div>
+    </div>
+    <div class="calc-row">
+      <span class="c-label">대출 차감</span>
+      <span class="c-value red">- 61,600,000 원</span>
+    </div>
   </div>
 
-  <div class="summary-box" id="profitBox">
-    <div class="res-label">🎯 예상 순 수익 (보유분 - 대출)</div>
-    <div class="res-amount" id="profitAmount">—</div>
-    <div class="res-rate" id="profitRate"></div>
+  <div class="ref-row">
+    <span class="ref-label">참고 · 타인주식 평가액 (600주)</span>
+    <span class="ref-value" id="otherValue">—</span>
   </div>
 
-  <footer>
-    데이터 기준: 취득가 50,000원 / 대출 6,160만원<br>
-    © 2026 Stock Calculator
-  </footer>
+  <div class="profit-box" id="profitBox">
+    <div class="profit-label">🎯 순 수익 (보유분 평가액 − 대출액)</div>
+    <div class="profit-amount" id="profitAmount">—</div>
+    <div class="profit-rate" id="profitRate"></div>
+    <div class="badge" id="priceBadge"></div>
+  </div>
+
+  <footer>취득가 50,000원 기준 · 보유 1,893주 · 대출 61,600,000원</footer>
 </div>
 
 <script>
-  const MY_SHARES      = 1893;
-  const OTHER_SHARES   = 600;
-  const ACQUIRE_PRICE  = 50000;
-  const LOAN_AMOUNT    = 61600000;
+  const MY_SHARES     = 1893;
+  const OTHER_SHARES  = 600;
+  const ACQUIRE_PRICE = 50000;
+  const LOAN_AMOUNT   = 61600000;
 
-  function fmt(n) { return new Intl.NumberFormat('ko-KR').format(n) + ' 원'; }
+  function fmt(n) {
+    return n.toLocaleString('ko-KR') + ' 원';
+  }
 
   function setPrice(p) {
     document.getElementById('currentPrice').value = p;
@@ -220,33 +340,39 @@
 
   function calculate() {
     const price = parseFloat(document.getElementById('currentPrice').value) || 0;
-    const holdingVal  = MY_SHARES * price;
-    const otherVal    = OTHER_SHARES * price;
-    const totalVal    = holdingVal + otherVal;
-    const profit      = holdingVal - LOAN_AMOUNT;
-    const costBase    = MY_SHARES * ACQUIRE_PRICE;
-    const rateVsCost  = costBase > 0 ? ((profit / costBase) * 100) : 0;
+
+    const holdingVal = MY_SHARES * price;
+    const otherVal   = OTHER_SHARES * price;
+    const profit     = holdingVal - LOAN_AMOUNT;
+
+    const costBase   = MY_SHARES * ACQUIRE_PRICE;
+    const rateVsCost = costBase > 0 ? (profit / costBase) * 100 : 0;
+    const priceRatio = ((price / ACQUIRE_PRICE) * 100).toFixed(1);
 
     document.getElementById('holdingValue').textContent = fmt(holdingVal);
     document.getElementById('otherValue').textContent   = fmt(otherVal);
-    document.getElementById('totalValue').textContent   = fmt(totalVal);
 
     const amtEl   = document.getElementById('profitAmount');
     const rateEl  = document.getElementById('profitRate');
     const boxEl   = document.getElementById('profitBox');
+    const badgeEl = document.getElementById('priceBadge');
 
-    amtEl.textContent  = (profit >= 0 ? '+' : '') + fmt(profit);
-    rateEl.textContent = (rateVsCost >= 0 ? '+' : '') + rateVsCost.toFixed(1) + '% (원가대비)';
+    amtEl.textContent   = (profit >= 0 ? '+' : '') + fmt(profit);
+    rateEl.textContent  = (rateVsCost >= 0 ? '+' : '') + rateVsCost.toFixed(1) + '%  (취득원가 대비)';
+    badgeEl.textContent = `현재가 = 취득가의 ${priceRatio}%`;
 
     if (profit >= 0) {
-      boxEl.classList.remove('loss');
+      amtEl.className  = 'profit-amount';
+      rateEl.className = 'profit-rate';
+      boxEl.className  = 'profit-box';
     } else {
-      boxEl.classList.add('loss');
+      amtEl.className  = 'profit-amount loss';
+      rateEl.className = 'profit-rate loss';
+      boxEl.className  = 'profit-box loss';
     }
   }
+
   calculate();
 </script>
-
 </body>
 </html>
-
