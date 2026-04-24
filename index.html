@@ -2,38 +2,42 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>우리사주 수익 계산기</title>
   <style>
+    /* 기본 초기화 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background-attachment: fixed;
       min-height: 100vh;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 16px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 16px;
+      color: #fff;
     }
 
     .card {
       background: rgba(255,255,255,0.05);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: 24px;
-      padding: 28px 20px;
+      padding: clamp(20px, 5vw, 32px);
       width: 100%;
-      max-width: 520px;
+      max-width: 480px; /* 모바일/데스크톱 모두 적절한 폭 */
       box-shadow: 0 25px 60px rgba(0,0,0,0.4);
     }
 
     h1 {
-      color: #fff;
-      font-size: clamp(20px, 5.5vw, 26px);
+      font-size: clamp(20px, 6vw, 26px);
       font-weight: 700;
       text-align: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       letter-spacing: -0.5px;
     }
 
@@ -44,29 +48,28 @@
       margin-bottom: 24px;
     }
 
+    /* 입력 섹션 */
     .input-group {
       background: rgba(255,255,255,0.08);
       border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 28px;
+      padding: 20px;
+      margin-bottom: 24px;
     }
 
     .input-label {
       color: rgba(255,255,255,0.6);
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      display: block;
     }
 
     .input-row {
       display: flex;
       align-items: center;
       background: rgba(0,0,0,0.3);
-      border: 2px solid rgba(255,221,0,0.5);
+      border: 2px solid rgba(255,221,0,0.4);
       border-radius: 12px;
-      overflow: hidden;
       transition: border-color 0.2s;
     }
     .input-row:focus-within { border-color: #ffdd00; }
@@ -77,237 +80,167 @@
       border: none;
       outline: none;
       color: #ffdd00;
-      font-size: clamp(26px, 7vw, 34px);
+      font-size: clamp(24px, 7vw, 32px);
       font-weight: 700;
-      padding: 16px 16px;
-      font-family: inherit;
+      padding: 12px 16px;
+      width: 100%;
       text-align: right;
     }
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
     .currency-tag {
-      color: rgba(255,221,0,0.6);
-      font-size: 15px;
+      color: #ffdd00;
       font-weight: 600;
-      padding: 0 16px 0 4px;
+      padding-right: 16px;
     }
 
+    /* 퀵 버튼 (그리드로 자동 줄바꿈 대응) */
     .quick-btns {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
       gap: 8px;
-      margin-top: 12px;
-      flex-wrap: wrap;
+      margin-top: 16px;
     }
     .quick-btn {
-      flex: 1;
-      min-width: 60px;
       background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 10px;
-      color: rgba(255,255,255,0.7);
-      font-size: clamp(13px, 3.5vw, 15px);
-      padding: 12px 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      padding: 10px 4px;
       cursor: pointer;
-      font-family: inherit;
-      transition: all 0.15s;
-      text-align: center;
+      transition: 0.2s;
     }
-    .quick-btn:hover {
-      background: rgba(255,221,0,0.15);
-      border-color: rgba(255,221,0,0.4);
-      color: #ffdd00;
-    }
+    .quick-btn:active { background: #ffdd00; color: #000; }
 
+    /* 정보 그리드 */
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
-
     .info-item {
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 14px 16px;
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-    .info-item .label {
-      color: rgba(255,255,255,0.4);
-      font-size: clamp(12px, 3vw, 13px);
-      margin-bottom: 4px;
-    }
-    .info-item .value {
-      color: rgba(255,255,255,0.85);
-      font-size: clamp(15px, 4vw, 17px);
-      font-weight: 600;
-    }
-
-    .result-section {
       background: rgba(255,255,255,0.04);
-      border-radius: 16px;
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
+    .info-item .label { color: rgba(255,255,255,0.4); font-size: 11px; margin-bottom: 4px; }
+    .info-item .value { font-size: 14px; font-weight: 600; }
 
+    /* 결과 섹션 */
+    .result-section {
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
     .result-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .result-row:last-child { border-bottom: none; }
+    .r-label { color: rgba(255,255,255,0.5); }
 
-    .result-row .r-label {
-      color: rgba(255,255,255,0.5);
-      font-size: clamp(13px, 3.5vw, 15px);
-    }
-    .result-row .r-value {
-      color: rgba(255,255,255,0.85);
-      font-size: clamp(14px, 3.8vw, 16px);
-      font-weight: 600;
-    }
-
+    /* 최종 수익 박스 */
     .profit-box {
-      background: linear-gradient(135deg, rgba(0,200,100,0.15), rgba(0,150,80,0.08));
-      border: 1px solid rgba(0,200,100,0.3);
-      border-radius: 16px;
-      padding: 22px;
+      background: linear-gradient(135deg, rgba(0,230,118,0.2), rgba(0,230,118,0.05));
+      border: 1px solid rgba(0,230,118,0.3);
+      border-radius: 20px;
+      padding: 24px 16px;
       text-align: center;
-      margin-top: 16px;
-      transition: all 0.3s;
     }
     .profit-box.loss {
-      background: linear-gradient(135deg, rgba(255,80,80,0.15), rgba(200,50,50,0.08));
-      border-color: rgba(255,80,80,0.3);
-    }
-
-    .profit-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 8px;
+      background: linear-gradient(135deg, rgba(255,82,82,0.2), rgba(255,82,82,0.05));
+      border-color: rgba(255,82,82,0.3);
     }
 
     .profit-amount {
-      font-size: clamp(32px, 9vw, 44px);
-      font-weight: 700;
+      font-size: clamp(28px, 8vw, 38px);
+      font-weight: 800;
       color: #00e676;
-      letter-spacing: -1px;
-      line-height: 1;
-      transition: color 0.3s;
+      margin-bottom: 4px;
     }
     .profit-amount.loss { color: #ff5252; }
 
-    .profit-rate {
-      font-size: 15px;
-      font-weight: 600;
-      color: rgba(0,230,118,0.7);
-      margin-top: 6px;
-      transition: color 0.3s;
-    }
-    .profit-rate.loss { color: rgba(255,82,82,0.7); }
-
+    .profit-rate { font-size: 14px; font-weight: 500; opacity: 0.9; }
     .badge {
       display: inline-block;
-      background: rgba(255,221,0,0.15);
+      margin-top: 12px;
+      padding: 4px 12px;
+      background: rgba(255,221,0,0.1);
       border: 1px solid rgba(255,221,0,0.3);
-      border-radius: 20px;
+      border-radius: 100px;
       color: #ffdd00;
       font-size: 11px;
-      font-weight: 600;
-      padding: 3px 10px;
-      margin-top: 10px;
     }
 
     footer {
-      text-align: center;
       margin-top: 24px;
-      color: rgba(255,255,255,0.2);
       font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
+
 <div class="card">
   <h1>🏢 우리사주 수익 계산기</h1>
-  <p class="subtitle">현재 주가를 입력하면 수익을 바로 계산합니다</p>
+  <p class="subtitle">현재 주가를 입력하면 수익을 계산합니다</p>
 
   <div class="input-group">
-    <div class="input-label">📌 현재 주가 입력</div>
+    <span class="input-label">실시간 주가 입력</span>
     <div class="input-row">
-      <input type="number" id="currentPrice" placeholder="100,000" value="100000" oninput="calculate()" />
+      <input type="number" id="currentPrice" value="100000" oninput="calculate()" pattern="\d*">
       <span class="currency-tag">원</span>
     </div>
     <div class="quick-btns">
-      <button class="quick-btn" onclick="setPrice(50000)">5만원</button>
-      <button class="quick-btn" onclick="setPrice(70000)">7만원</button>
-      <button class="quick-btn" onclick="setPrice(100000)">10만원</button>
-      <button class="quick-btn" onclick="setPrice(150000)">15만원</button>
-      <button class="quick-btn" onclick="setPrice(200000)">20만원</button>
+      <button class="quick-btn" onclick="setPrice(50000)">5만</button>
+      <button class="quick-btn" onclick="setPrice(70000)">7만</button>
+      <button class="quick-btn" onclick="setPrice(100000)">10만</button>
+      <button class="quick-btn" onclick="setPrice(150000)">15만</button>
     </div>
   </div>
 
   <div class="info-grid">
-    <div class="info-item">
-      <div class="label">총 주식수</div>
-      <div class="value">2,493 주</div>
-    </div>
-    <div class="info-item">
-      <div class="label">취득가격</div>
-      <div class="value">50,000 원</div>
-    </div>
-    <div class="info-item">
-      <div class="label">보유 주식수</div>
-      <div class="value">1,893 주</div>
-    </div>
-    <div class="info-item">
-      <div class="label">대출액</div>
-      <div class="value">61,600,000 원</div>
-    </div>
+    <div class="info-item"><div class="label">보유 주식</div><div class="value">1,893 주</div></div>
+    <div class="info-item"><div class="label">취득 단가</div><div class="value">50,000 원</div></div>
+    <div class="info-item"><div class="label">총 대출액</div><div class="value" style="color:#ff8a8a">6,160만</div></div>
+    <div class="info-item"><div class="label">타인 주식</div><div class="value">600 주</div></div>
   </div>
 
   <div class="result-section">
-    <div class="result-row">
-      <span class="r-label">보유주식 평가금액</span>
-      <span class="r-value" id="holdingValue">—</span>
-    </div>
-    <div class="result-row">
-      <span class="r-label">타인주식 평가금액 (600주)</span>
-      <span class="r-value" id="otherValue">—</span>
-    </div>
-    <div class="result-row">
-      <span class="r-label">전체 평가금액</span>
-      <span class="r-value" id="totalValue">—</span>
-    </div>
-    <div class="result-row">
-      <span class="r-label">대출 차감</span>
-      <span class="r-value" style="color:#ff5252">- 61,600,000 원</span>
-    </div>
+    <div class="result-row"><span class="r-label">보유주 평가액</span><span id="holdingValue">—</span></div>
+    <div class="result-row"><span class="r-label">타인주 평가액</span><span id="otherValue">—</span></div>
+    <div class="result-row" style="font-weight:700;"><span class="r-label">전체 합계</span><span id="totalValue">—</span></div>
   </div>
 
   <div class="profit-box" id="profitBox">
-    <div class="profit-label">🎯 순 수익 (보유주식 기준)</div>
+    <div style="font-size:12px; opacity:0.7; margin-bottom:8px;">🎯 순 수익 (보유분 - 대출액)</div>
     <div class="profit-amount" id="profitAmount">—</div>
     <div class="profit-rate" id="profitRate"></div>
     <div class="badge" id="priceBadge"></div>
   </div>
 
-  <footer>취득가 50,000원 기준 · 보유 1,893주 · 대출 61,600,000원</footer>
+  <footer>
+    데이터 기준: 취득가 50,000원 / 대출 6,160만원<br>
+    © 2024 Stock Calculator
+  </footer>
 </div>
 
 <script>
-  const TOTAL_SHARES   = 2493;
   const MY_SHARES      = 1893;
   const OTHER_SHARES   = 600;
   const ACQUIRE_PRICE  = 50000;
   const LOAN_AMOUNT    = 61600000;
 
   function fmt(n) {
-    return n.toLocaleString('ko-KR') + ' 원';
+    return new Intl.NumberFormat('ko-KR').format(n) + ' 원';
   }
 
   function setPrice(p) {
@@ -318,7 +251,7 @@
   function calculate() {
     const price = parseFloat(document.getElementById('currentPrice').value) || 0;
 
-    const holdingVal  = MY_SHARES    * price;
+    const holdingVal  = MY_SHARES * price;
     const otherVal    = OTHER_SHARES * price;
     const totalVal    = holdingVal + otherVal;
     const profit      = holdingVal - LOAN_AMOUNT;
@@ -337,21 +270,21 @@
     const badgeEl = document.getElementById('priceBadge');
 
     amtEl.textContent  = (profit >= 0 ? '+' : '') + fmt(profit);
-    rateEl.textContent = (rateVsCost >= 0 ? '+' : '') + rateVsCost.toFixed(1) + '%  (취득원가 대비)';
-    badgeEl.textContent = `현재가 = 취득가의 ${priceRatio}%`;
+    rateEl.textContent = (rateVsCost >= 0 ? '+' : '') + rateVsCost.toFixed(1) + '% (원가대비)';
+    badgeEl.textContent = `현재가는 취득가의 ${priceRatio}% 수준`;
 
     if (profit >= 0) {
-      amtEl.className  = 'profit-amount';
-      rateEl.className = 'profit-rate';
-      boxEl.className  = 'profit-box';
+      amtEl.classList.remove('loss');
+      boxEl.classList.remove('loss');
     } else {
-      amtEl.className  = 'profit-amount loss';
-      rateEl.className = 'profit-rate loss';
-      boxEl.className  = 'profit-box loss';
+      amtEl.classList.add('loss');
+      boxEl.classList.add('loss');
     }
   }
 
+  // 초기 계산 실행
   calculate();
 </script>
+
 </body>
 </html>
