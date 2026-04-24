@@ -7,24 +7,32 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      height: 100%;
+      min-height: 100dvh;
+    }
+
     body {
       font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      padding: 0;
-      margin: 0;
+      min-height: 100dvh;
     }
 
     .card {
       width: 100%;
-      min-height: 100vh;
+      min-height: 100dvh;
       padding: 32px 20px 40px;
       display: flex;
       flex-direction: column;
     }
 
     @media (min-width: 600px) {
-      body { display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; }
+      body {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 40px 20px;
+      }
       .card {
         min-height: auto;
         max-width: 480px;
@@ -115,15 +123,15 @@
       padding: 12px 2px;
       cursor: pointer;
       font-family: inherit;
-      transition: all 0.15s;
       text-align: center;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      transition: background 0.1s, color 0.1s;
     }
     .quick-btn:active {
-      background: rgba(255,221,0,0.15);
-      border-color: rgba(255,221,0,0.4);
+      background: rgba(255,221,0,0.2);
+      border-color: rgba(255,221,0,0.5);
       color: #ffdd00;
     }
 
@@ -165,7 +173,6 @@
       align-items: center;
       padding: 8px 0;
     }
-
     .calc-row .c-label {
       color: rgba(255,255,255,0.5);
       font-size: 14px;
@@ -270,11 +277,11 @@
       <span class="currency-tag">원</span>
     </div>
     <div class="quick-btns">
-      <button class="quick-btn" ontouchstart="setPrice(50000)" onclick="setPrice(50000)">5만</button>
-      <button class="quick-btn" ontouchstart="setPrice(70000)" onclick="setPrice(70000)">7만</button>
-      <button class="quick-btn" ontouchstart="setPrice(100000)" onclick="setPrice(100000)">10만</button>
-      <button class="quick-btn" ontouchstart="setPrice(150000)" onclick="setPrice(150000)">15만</button>
-      <button class="quick-btn" ontouchstart="setPrice(200000)" onclick="setPrice(200000)">20만</button>
+      <button class="quick-btn" onclick="setPrice(50000)">5만</button>
+      <button class="quick-btn" onclick="setPrice(70000)">7만</button>
+      <button class="quick-btn" onclick="setPrice(100000)">10만</button>
+      <button class="quick-btn" onclick="setPrice(150000)">15만</button>
+      <button class="quick-btn" onclick="setPrice(200000)">20만</button>
     </div>
   </div>
 
@@ -338,10 +345,10 @@
     return n.toLocaleString('ko-KR') + ' 원';
   }
 
+  // onclick만 사용, 값 직접 설정 후 calculate() 호출
   function setPrice(p) {
-    const input = document.getElementById('currentPrice');
-    input.value = p;
-    input.dispatchEvent(new Event('input'));
+    document.getElementById('currentPrice').value = p;
+    calculate();
   }
 
   function calculate() {
@@ -377,6 +384,17 @@
       boxEl.className  = 'profit-box loss';
     }
   }
+
+  // 버튼 터치 이벤트 직접 바인딩 (onclick 보완)
+  document.addEventListener('DOMContentLoaded', function () {
+    const prices = [50000, 70000, 100000, 150000, 200000];
+    document.querySelectorAll('.quick-btn').forEach(function(btn, i) {
+      btn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        setPrice(prices[i]);
+      });
+    });
+  });
 
   calculate();
 </script>
